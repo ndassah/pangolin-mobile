@@ -13,54 +13,39 @@ class TachesPage extends StatefulWidget {
 }
 
 class _TachesPageState extends State<TachesPage> {
-  List<dynamic> taches = []; // Stocker la liste des tâches
-  List<dynamic> superviseurs = []; // Stocker la liste des superviseurs
-  List<dynamic> activites = []; // Stocker la liste des activités
+  List<dynamic> taches = []; // Stocker la liste des tâches ici
   bool _isLoading = false; // Indicateur de chargement
-  final _storage = FlutterSecureStorage(); // Stockage sécurisé
 
   @override
   void initState() {
     super.initState();
-    _fetchData(); // Récupérer les données au démarrage
+    _fetchTaches(); // Récupérer les tâches au démarrage de la page
   }
 
-  // Fonction pour récupérer la liste des tâches, superviseurs et activités
-  Future<void> _fetchData() async {
+  // Fonction pour récupérer la liste des tâches depuis l'API
+  final _storage = FlutterSecureStorage(); // Ajout du stockage sécurisé
+
+// Fonction pour récupérer la liste des tâches depuis l'API
+  Future<void> _fetchTaches() async {
     String? token = await _storage.read(key: 'auth_token'); // Récupérer le token sécurisé
 
     if (token != null) {
-      setState(() => _isLoading = true);
-
-      // URL de l'API pour toutes les tâches, superviseurs et activités
-      final tachesUrl = Uri.parse('http://192.168.43.39:8000/api/taches/all');
-      final superviseursUrl = Uri.parse('http://192.168.43.39:8000/api/superviseurs/all');
-      final activitesUrl = Uri.parse('http://192.168.43.39:8000/api/activites/all');
-
-      // Requêtes pour les tâches, superviseurs et activités
-      final tachesResponse = await http.get(tachesUrl, headers: {
-        'Authorization': 'Bearer $token',
-        'Accept': 'application/json',
-      });
-      final superviseursResponse = await http.get(superviseursUrl, headers: {
-        'Authorization': 'Bearer $token',
-        'Accept': 'application/json',
-      });
-      final activitesResponse = await http.get(activitesUrl, headers: {
-        'Authorization': 'Bearer $token',
-        'Accept': 'application/json',
+      final url = Uri.parse('http://192.168.43.39:8000/api/taches/all'); // URL de l'API pour toutes les tâches
+      final response = await http.get(url, headers: {
+        'Authorization': 'Bearer $token', // Ajoutez le token d'authentification
+        'Accept': 'application/json', // Indique que vous attendez une réponse en JSON
       });
 
-      if (tachesResponse.statusCode == 200 && superviseursResponse.statusCode == 200 && activitesResponse.statusCode == 200) {
+      if (response.statusCode == 200) {
         setState(() {
-          taches = json.decode(tachesResponse.body)['taches']; // Tâches
-          superviseurs = json.decode(superviseursResponse.body)['superviseurs']; // Superviseurs
-          activites = json.decode(activitesResponse.body)['activites']; // Activités
+          taches = json.decode(response.body)['taches']; // Récupérer les données de tâches
           _isLoading = false;
         });
       } else {
+        print('Status code: ${response.statusCode}');
+        print('Response body: ${response.body}'); // Ajoutez cette ligne pour voir la réponse
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erreur lors de la récupération des données')),
+          SnackBar(content: Text('Erreur lors de la récupération des tâches: ${response.body}')),
         );
       }
     } else {
@@ -68,24 +53,6 @@ class _TachesPageState extends State<TachesPage> {
         SnackBar(content: Text('Aucun token trouvé')),
       );
     }
-  }
-
-  // Fonction pour trouver le nom d'un superviseur à partir de l'ID
-  String _getSuperviseurName(int idSuperviseur) {
-    final superviseur = superviseurs.firstWhere(
-          (s) => s['id'] == idSuperviseur,
-      orElse: () => null,
-    );
-    return superviseur != null ? superviseur['nom'] : 'Inconnu';
-  }
-
-  // Fonction pour trouver le nom d'une activité à partir de l'ID
-  String _getActiviteName(int idActivite) {
-    final activite = activites.firstWhere(
-          (a) => a['id'] == idActivite,
-      orElse: () => null,
-    );
-    return activite != null ? activite['nom'] : 'Inconnue';
   }
 
   @override
@@ -113,8 +80,8 @@ class _TachesPageState extends State<TachesPage> {
               children: [
                 Text('Description: ${tache['description']}'),
                 Text('Durée prévue: ${tache['duree_prevue']}'),
-                Text('Superviseur: ${_getSuperviseurName(tache['id_superviseur'])}'),
-                Text('Activité: ${_getActiviteName(tache['activite_id'])}'),
+                Text('Superviseur ID: ${tache['id_superviseur']}'),
+                Text('Activité ID: ${tache['activite_id']}'),
               ],
             ),
             trailing: Text('Statut: ${tache['status']}'),
