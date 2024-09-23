@@ -65,7 +65,7 @@ class MyApp extends StatelessWidget {
         '/directeur': (context) => directeurPage(),
         '/superviseur': (context) => superviseurPage(),
         '/stagiaire': (context) =>stagiairePage(),
-        '/etude':(context) => etudePage(),
+        '/etude':(context) => EtudePage(),
         '/work': (context) => CreateTravailPage(),
         '/service': (context) =>CreateServicePage(),
       },
