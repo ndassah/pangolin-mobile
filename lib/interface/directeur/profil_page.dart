@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:sappeli/tools/app_text.dart';
 import 'package:sappeli/widgets/drawers/drawer.dart';
-import 'package:shared_preferences/shared_preferences.dart'; // Pour stocker et récupérer le token
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfilPage extends StatefulWidget {
   const ProfilPage({super.key});
@@ -25,40 +25,63 @@ class _ProfilPageState extends State<ProfilPage> {
 
   // Fonction pour récupérer l'ID de l'utilisateur en session et ses informations
   Future<void> _fetchUserData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? token = prefs.getString('token'); // Récupérer le token
+    String? token = await SecureStorage.read('auth_token'); // Récupérer le token
 
-    if (token != null) {
+    if (token != null && token.isNotEmpty) {
       print("Token: $token"); // Vérifier que le token est bien récupéré
       final url = Uri.parse('http://192.168.43.39:8000/api/user'); // URL de l'API
-      final response = await http.get(url, headers: {
-        'Authorization': 'Bearer $token', // Utiliser le token pour l'authentification
-      });
+      final response = await http.get(
+        url,
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Accept': 'application/json', // Indique que tu veux une réponse JSON
+          'Content-Type': 'application/json', // Indique que la requête attend un format JSON
+        },
+      );
+
 
       if (response.statusCode == 200) {
-        final jsonResponse = json.decode(response.body);
-        print(jsonResponse); // Imprimer la réponse complète pour vérifier la structure
+        try {
+          final jsonResponse = json.decode(response.body);
 
-        setState(() {
-          userData = jsonResponse['user']; // Accéder à l'objet 'user'
-          _isLoading = false; // Arrêter l'indicateur de chargement
-        });
+          // Validation de la structure attendue dans la réponse JSON
+          if (jsonResponse is Map<String, dynamic> && jsonResponse.containsKey('user')) {
+            setState(() {
+              userData = jsonResponse['user']; // Accéder à l'objet 'user'
+              _isLoading = false; // Arrêter l'indicateur de chargement
+            });
+          } else {
+            setState(() {
+              errorMessage = 'Format inattendu'; // Erreur si l'objet 'user' est absent
+              _isLoading = false;
+            });
+          }
+        } catch (e) {
+          // Gestion des erreurs lors du parsing JSON
+          setState(() {
+            errorMessage = 'Erreur de format JSON : ${e.toString()}';
+            _isLoading = false;
+          });
+        }
       } else if (response.statusCode == 401) {
-        // Gérer le cas où le token est invalide
         setState(() {
-          errorMessage = 'Erreur d\'authentification';
+          errorMessage = 'Erreur d\'authentification : token invalide';
+          _isLoading = false;
         });
       } else {
         setState(() {
-          errorMessage = 'Erreur lors de la récupération des données';
+          errorMessage = 'Erreur lors de la récupération des données: ${response.statusCode}';
+          _isLoading = false;
         });
       }
     } else {
       setState(() {
         errorMessage = 'Aucun token trouvé';
+        _isLoading = false;
       });
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
