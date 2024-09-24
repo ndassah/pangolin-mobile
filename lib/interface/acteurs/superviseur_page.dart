@@ -13,11 +13,14 @@ class superviseurPage extends StatefulWidget {
 class _superviseurPageState extends State<superviseurPage> {
   bool _isLoading = true;
   List<dynamic> _activites = [];
+  bool _isLoadingStagiaires = true;
+  List<dynamic> _stagiaires = [];
 
   @override
   void initState() {
     super.initState();
-    _fetchActivites(); // Récupérer les activités lors de l'initialisation
+    _fetchActivites();
+    _fetchStagiaires();
   }
 
   // Fonction pour récupérer les activités depuis l'API
@@ -44,6 +47,34 @@ class _superviseurPageState extends State<superviseurPage> {
       ));
       setState(() {
         _isLoading = false;
+      });
+    }
+  }
+
+
+  Future<void> _fetchStagiaires() async {
+    try {
+      final response = await http.get(Uri.parse('http://192.168.43.39:8000/api/stagiaire/all'));
+
+      if (response.statusCode == 200) {
+        setState(() {
+          _stagiaires = json.decode(response.body);
+          _isLoadingStagiaires = false;
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Échec de la récupération des stagiaires. Code: ${response.statusCode}'),
+        ));
+        setState(() {
+          _isLoadingStagiaires = false;
+        });
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Erreur: $e'),
+      ));
+      setState(() {
+        _isLoadingStagiaires = false;
       });
     }
   }
@@ -75,7 +106,7 @@ class _superviseurPageState extends State<superviseurPage> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 _buildIconOption(Icons.history_outlined, 'historie travaux','/create-activite',context),
-                _buildIconOption(Icons.assignment, 'Attribuer un travail','/tache',context),
+                _buildIconOption(Icons.assignment, 'Attribuer un travail','/assign-work',context),
                 _buildIconOption(Icons.elevator_outlined, 'Evaluer un stagiaire','/work',context),
               ],
             ),
@@ -85,7 +116,7 @@ class _superviseurPageState extends State<superviseurPage> {
               style: AppText.sectionTitle(),
             ),
             VerticalSpacer(height: 10),
-            _buildSuperviseurList(),
+            _buildStagiaireList(),
             VerticalSpacer(height: 30),
             Text(
               'Activités',
@@ -114,38 +145,52 @@ class _superviseurPageState extends State<superviseurPage> {
     );
   }
 
-  Widget _buildSuperviseurList() {
-    List<String> superviseurs = ['Superviseur 1', 'Superviseur 2', 'Superviseur 3', 'Superviseur 4', 'Superviseur 5'];
-
+  Widget _buildStagiaireList() {
+    if (_isLoadingStagiaires) {
+      return Center(child: CircularProgressIndicator());
+    }
     return Container(
       height: 150,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        itemCount: superviseurs.length,
+        itemCount: _stagiaires.length,
         itemBuilder: (context, index) {
-          return _buildSuperviseurCard(superviseurs[index]);
+          final stagiaire = _stagiaires[index];
+          return _buildStagiaireCard(stagiaire);
         },
       ),
     );
   }
 
-  Widget _buildSuperviseurCard(String superviseur) {
+  Widget _buildStagiaireCard(dynamic stagiaire) {
     return Container(
-      width: 100,
+      width: 165,
       margin: EdgeInsets.symmetric(horizontal: 8),
       decoration: BoxDecoration(
-        color: Colors.blueAccent,
+        color: Colors.greenAccent,
         borderRadius: BorderRadius.circular(10),
       ),
       child: Center(
-        child: Text(
-          superviseur,
-          style: AppText.cardText(),
-          textAlign: TextAlign.center,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              stagiaire['nom'], // Affiche le nom du stagiaire
+              style: AppText.cardText(),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 5),
+            Text(
+              stagiaire['email'], // Affiche l'email du stagiaire
+              style: AppText.cardText(),
+              textAlign: TextAlign.center,
+            ),
+          ],
         ),
       ),
     );
   }
+
 
   // Création de la table d'activités
   Widget _buildActiviteTable() {
