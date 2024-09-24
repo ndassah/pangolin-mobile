@@ -40,37 +40,37 @@ Drawer buildDrawer(BuildContext context) {
           context: context,
           icon: Icons.work,
           text: 'Travaux',
-          routeName: '/travaux',
+          routeName: '/travauxSub',
           currentRoute: currentRoute,
           onTap: () {
-            Navigator.pushNamed(context, '/travaux');
+            Navigator.pushNamed(context, '/travauxSub');
           },
         ),
         _createDrawerItem(
           context: context,
           icon: Icons.assignment,
           text: 'Tâches',
-          routeName: '/taches',
+          routeName: '/tachesSub',
           currentRoute: currentRoute,
           onTap: () {
-            Navigator.pushNamed(context, '/taches');
+            Navigator.pushNamed(context, '/tachesSub');
           },
         ),
         _createDrawerItem(
           context: context,
           icon: Icons.person,
           text: 'Profil',
-          routeName: AppRoutes.login,
+          routeName: '/profileSub',
           currentRoute: currentRoute,
           onTap: () {
-            Navigator.pushNamed(context, '/profil');
+            Navigator.pushNamed(context, '/profileSub');
           },
         ),
         _createDrawerItem(
           context: context,
           icon: Icons.exit_to_app,
           text: 'Déconnexion',
-          routeName: '/login',
+          routeName: '/deconnexion',
           currentRoute: currentRoute,
           onTap: () async {
             // Logique de déconnexion
@@ -81,10 +81,10 @@ Drawer buildDrawer(BuildContext context) {
           context: context,
           icon: Icons.help,
           text: 'FAQ',
-          routeName: '/faq',
+          routeName: '/faqSub',
           currentRoute: currentRoute,
           onTap: () {
-            Navigator.pushNamed(context, '/faq');
+            Navigator.pushNamed(context, '/faqSub');
           },
         ),
       ],

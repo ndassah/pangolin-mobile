@@ -11,11 +11,14 @@ import 'package:sappeli/interface/acteurs/superviseur_page.dart';
 import 'package:sappeli/interface/directeur/etude_page.dart';
 import 'package:sappeli/interface/stagiaire/profil_page_stagiaire.dart';
 import 'package:sappeli/interface/stagiaire/taches_page_stagaire.dart';
+import 'package:sappeli/interface/superviseur/faq_page_superviseur.dart';
+import 'package:sappeli/interface/superviseur/profil_page_superviseur.dart';
+import 'package:sappeli/interface/superviseur/taches_page_superviseur.dart';
+import 'package:sappeli/interface/superviseur/travaux_page_superviseur.dart';
 import 'package:sappeli/onBoarding/splash.dart';
 import 'package:sappeli/onBoarding/walk.dart';
 import 'package:sappeli/tools/app_routes.dart';
 import 'auth/verification.dart';
-import 'interface/acteurs/directeur_page.dart'; // Assurez-vous d'importer vos pages ici
 import 'interface/directeur/faq_page.dart';
 import 'interface/directeur/travaux_page.dart';
 import 'interface/stagiaire/travaux_page_stagiaire.dart';
@@ -38,7 +41,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.cyan,
       ),
       initialRoute: 'splash',
-      routes: {
+      routes: <String, WidgetBuilder>{
         AppRoutes.splash:(context)=>const SplashScreen(),
         AppRoutes.walk:(context)=>const WalkScreen(),
         AppRoutes.login:(context)=>const LoginScreen(),
@@ -62,12 +65,16 @@ class MyApp extends StatelessWidget {
         '/create-activite': (context) => CreateActivitePage(),
         '/tache':(context) => CreateTachePage(),
         '/tacheStagiaire': (context) => TachesPageStagiaire(),
-        '/directeur': (context) => directeurPage(),
         '/superviseur': (context) => superviseurPage(),
+        '/directeur': (context) => directeurPage(),
         '/stagiaire': (context) =>stagiairePage(),
-        '/etude':(context) => EtudePage(),
+        '/etude':(context) => EtudePage(stagiaireId: 1,),
         '/work': (context) => CreateTravailPage(),
         '/service': (context) =>CreateServicePage(),
+        '/faqSub': (context) =>FaqPageSub(),
+        '/travauxSub': (context) =>TravauxPageSub(),
+        '/tachesSub': (context) =>TachesPageSub(),
+        '/profileSub': (context) =>ProfilPageSub(),
       },
     );
   }

@@ -114,12 +114,12 @@ class _directeurPageState extends State<directeurPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   _buildIconOption(
-                      Icons.create, 'activité', '/create-activite', context),
+                      Icons.workspaces, 'activité', '/create-activite', context),
                   _buildIconOption(
                       Icons.assignment, 'tâches', '/tache', context),
                   _buildIconOption(Icons.work, 'travaux', '/work', context),
                   _buildIconOption(
-                      Icons.design_services, 'service', '/service', context),
+                      Icons.design_services, 'evaluer service', '/service', context),
                 ],
               ),
               VerticalSpacer(height: 30),
