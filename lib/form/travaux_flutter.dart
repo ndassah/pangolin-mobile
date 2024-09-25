@@ -13,14 +13,17 @@ class _CreateTravailPageState extends State<CreateTravailPage> {
   String nomTravail = '';
   String description = '';
   int tacheId = 1; // ID de la tâche par défaut
+  int stagiaireId = 1; // ID du stagiaire par défaut
   List<dynamic> taches = []; // Liste des tâches disponibles
+  List<dynamic> _stagiaires = [];// Liste des stagiaires disponibles
 
   bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    _fetchTaches(); // Charger les tâches dès que la page est affichée
+    _fetchTaches(); // Charger les tâches
+    _fetchStagiaires(); // Charger les stagiaires
   }
 
   // Fonction pour récupérer la liste des tâches depuis l'API
@@ -32,7 +35,7 @@ class _CreateTravailPageState extends State<CreateTravailPage> {
       setState(() {
         taches = json.decode(response.body)['taches'];
         if (taches.isNotEmpty) {
-          tacheId = taches[0]['id']; // Définir un ID par défaut
+          tacheId = taches[0]['id']; // Définir un ID de tâche par défaut
         }
       });
     } else {
@@ -41,6 +44,29 @@ class _CreateTravailPageState extends State<CreateTravailPage> {
       );
     }
   }
+
+  // Fonction pour récupérer la liste des stagiaires depuis l'API
+
+  Future<void> _fetchStagiaires() async {
+    try {
+      final response = await http.get(Uri.parse('http://192.168.43.39:8000/api/stagiaire/all'));
+
+      if (response.statusCode == 200) {
+        setState(() {
+          _stagiaires = json.decode(response.body);
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Échec de la récupération des stagiaires. Code: ${response.statusCode}'),
+        ));
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Erreur: $e'),
+      ));
+    }
+  }
+
 
   // Fonction pour envoyer les données au serveur
   Future<void> _creerTravail() async {
@@ -54,11 +80,13 @@ class _CreateTravailPageState extends State<CreateTravailPage> {
         url,
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json'
         },
         body: json.encode({
           'nom': nomTravail,
           'description': description,
           'tache_id': tacheId, // ID de la tâche sélectionnée
+          'stagiaire_id': stagiaireId, // ID du stagiaire sélectionné
         }),
       );
 
@@ -118,7 +146,8 @@ class _CreateTravailPageState extends State<CreateTravailPage> {
                 },
               ),
               DropdownButtonFormField<int>(
-                decoration: InputDecoration(labelText: 'Sélectionner une Tâche'),
+                decoration:
+                InputDecoration(labelText: 'Sélectionner une Tâche'),
                 value: taches.isNotEmpty ? tacheId : null, // Définit la valeur si la liste n'est pas vide
                 items: taches.isNotEmpty
                     ? taches.map<DropdownMenuItem<int>>((tache) {
@@ -136,8 +165,26 @@ class _CreateTravailPageState extends State<CreateTravailPage> {
                 }
                     : null, // Désactive si la liste est vide
               ),
-
-
+              DropdownButtonFormField<int>(
+                decoration:
+                InputDecoration(labelText: 'Sélectionner un Stagiaire'),
+                value: _stagiaires.isNotEmpty ? stagiaireId : null, // Définit la valeur si la liste n'est pas vide
+                items: _stagiaires.isNotEmpty
+                    ? _stagiaires.map<DropdownMenuItem<int>>((stagiaire) {
+                  return DropdownMenuItem<int>(
+                    value: stagiaire['id'],
+                    child: Text(stagiaire['nom'] ?? 'Inconnu'),
+                  );
+                }).toList()
+                    : null, // Ajoute une vérification pour empêcher l'erreur
+                onChanged: _stagiaires.isNotEmpty
+                    ? (value) {
+                  setState(() {
+                    stagiaireId = value ?? stagiaireId; // Conserve l'ID actuel si la valeur est nulle
+                  });
+                }
+                    : null, // Désactive si la liste est vide
+              ),
               SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _creerTravail,

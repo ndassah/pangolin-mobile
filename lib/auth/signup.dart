@@ -39,7 +39,8 @@ class _SignupScreenState extends State<SignupScreen> {
 
   bool isLoading = false;
   bool hasAgreed = false;
-  bool isSuperviseur = false; // Pour vérifier si le rôle est superviseur
+  bool isSuperviseur = false;
+  bool isStagiaire = false;// Pour vérifier si le rôle est superviseur
 
   Map<String, dynamic> errors = {};
 
@@ -75,9 +76,9 @@ class _SignupScreenState extends State<SignupScreen> {
                 textInputAction: TextInputAction.next,
                 textInputType: TextInputType.number,
                 onChanged: (value) {
-                  // Vérifie si le rôle est superviseur (id = 3)
+                  // Vérifie si le rôle est superviseur (id = 3) ou stagiaire (id = 4)
                   setState(() {
-                    isSuperviseur = value == '3';
+                    isSuperviseur = value == '3' || value == '4';
                   });
                 },
               ),
@@ -132,7 +133,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 isPassword: true,
                 textInputAction: TextInputAction.done,
               ),
-              if (isSuperviseur) // Afficher le champ service_id si rôle superviseur
+              if (isSuperviseur) // Afficher le champ service_id si rôle superviseur ou stagiaire
                 Column(
                   children: [
                     AppSpacing.vertical(size: 16),

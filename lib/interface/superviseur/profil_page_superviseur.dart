@@ -39,6 +39,8 @@ class _ProfilPageSubState extends State<ProfilPageSub> {
         },
       );
 
+      // Affiche la réponse complète pour le débogage
+      print('Response body: ${response.body}');
 
       if (response.statusCode == 200) {
         try {
@@ -52,7 +54,7 @@ class _ProfilPageSubState extends State<ProfilPageSub> {
             });
           } else {
             setState(() {
-              errorMessage = 'Format inattendu'; // Erreur si l'objet 'user' est absent
+              errorMessage = 'Format inattendu : ${response.body}'; // Affiche le contenu de la réponse inattendue
               _isLoading = false;
             });
           }
@@ -81,7 +83,6 @@ class _ProfilPageSubState extends State<ProfilPageSub> {
       });
     }
   }
-
 
   @override
   Widget build(BuildContext context) {

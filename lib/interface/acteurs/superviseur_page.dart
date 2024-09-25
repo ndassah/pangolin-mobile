@@ -106,13 +106,13 @@ class _superviseurPageState extends State<superviseurPage> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 _buildIconOption(Icons.history_outlined, 'historie travaux','/create-activite',context),
-                _buildIconOption(Icons.assignment, 'Attribuer un travail','/assign-work',context),
+                _buildIconOption(Icons.work, 'creer travaux', '/work', context),
                 _buildIconOption(Icons.elevator_outlined, 'Evaluer un stagiaire','/work',context),
               ],
             ),
             VerticalSpacer(height: 30),
             Text(
-              'Liste des superviseurs',
+              'Liste des stagiaires',
               style: AppText.sectionTitle(),
             ),
             VerticalSpacer(height: 10),
