@@ -8,12 +8,12 @@ import '../tools/app_strings.dart';
 
 class VerificationScreen extends StatefulWidget {
   final String email;
-  final String token;  // Utiliser directement le token
+  final String token;
 
   const VerificationScreen({
     super.key,
     required this.email,
-    required this.token,  // Le token est maintenant requis
+    required this.token,
   });
 
   @override
@@ -28,7 +28,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Utilisez directement widget.email et widget.token
+    // Utilisation directement widget.email et widget.token
     final String email = widget.email;
     final String token = widget.token;
 

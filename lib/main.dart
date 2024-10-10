@@ -12,6 +12,7 @@ import 'package:sappeli/interface/directeur/etude_page.dart';
 import 'package:sappeli/interface/stagiaire/profil_page_stagiaire.dart';
 import 'package:sappeli/interface/stagiaire/taches_page_stagaire.dart';
 import 'package:sappeli/interface/superviseur/assign_work_page.dart';
+import 'package:sappeli/interface/superviseur/evaluer_stagiaire.dart';
 import 'package:sappeli/interface/superviseur/faq_page_superviseur.dart';
 import 'package:sappeli/interface/superviseur/profil_page_superviseur.dart';
 import 'package:sappeli/interface/superviseur/taches_page_superviseur.dart';
@@ -66,6 +67,7 @@ class MyApp extends StatelessWidget {
         '/create-activite': (context) => CreateActivitePage(),
         '/tache':(context) => CreateTachePage(),
         '/tacheStagiaire': (context) => TachesPageStagiaire(),
+        '/TravauxPageStagiaire': (context) =>TravauxPageStagiaire(),
         '/superviseur': (context) => superviseurPage(),
         '/directeur': (context) => directeurPage(),
         '/stagiaire': (context) =>stagiairePage(),
@@ -77,6 +79,7 @@ class MyApp extends StatelessWidget {
         '/tachesSub': (context) =>TachesPageSub(),
         '/profileSub': (context) =>ProfilPageSub(),
         '/assign-work': (context) => AssignWorkPage(),
+        '/evaluerStagiaire': (context) => evaluerStagiaire(),
       },
     );
   }

@@ -13,8 +13,7 @@ class directeurPage extends StatefulWidget {
 class _directeurPageState extends State<directeurPage> {
   bool _isLoading = true;
   List<dynamic> _activites = [];
-  List<dynamic> _superviseurs =
-      []; // Nouvelle variable pour stocker les superviseurs
+  List<dynamic> _superviseurs = []; // Nouvelle variable pour stocker les superviseurs
 
   @override
   void initState() {

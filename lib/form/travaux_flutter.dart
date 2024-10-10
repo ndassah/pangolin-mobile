@@ -22,8 +22,8 @@ class _CreateTravailPageState extends State<CreateTravailPage> {
   @override
   void initState() {
     super.initState();
-    _fetchTaches(); // Charger les tâches
-    _fetchStagiaires(); // Charger les stagiaires
+    _fetchTaches(); // Chargement des tâches
+    _fetchStagiaires(); // Chargement des stagiaires
   }
 
   // Fonction pour récupérer la liste des tâches depuis l'API
@@ -35,7 +35,7 @@ class _CreateTravailPageState extends State<CreateTravailPage> {
       setState(() {
         taches = json.decode(response.body)['taches'];
         if (taches.isNotEmpty) {
-          tacheId = taches[0]['id']; // Définir un ID de tâche par défaut
+          tacheId = taches[0]['id']; // Définition du ID de tâche par défaut
         }
       });
     } else {
@@ -90,11 +90,11 @@ class _CreateTravailPageState extends State<CreateTravailPage> {
         }),
       );
 
-      if (response.statusCode == 201) {
+      if (response.statusCode != 201) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Travail créé avec succès!')),
         );
-        Navigator.pop(context); // Retourner à la page précédente après création
+        Navigator.pop(context); // Retour à la page précédente après création
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Erreur lors de la création du travail')),
@@ -163,7 +163,7 @@ class _CreateTravailPageState extends State<CreateTravailPage> {
                     tacheId = value ?? tacheId; // Conserve l'ID actuel si la valeur est nulle
                   });
                 }
-                    : null, // Désactive si la liste est vide
+                    : null, // Désactivation si la liste est vide
               ),
               DropdownButtonFormField<int>(
                 decoration:

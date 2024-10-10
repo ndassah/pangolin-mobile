@@ -40,7 +40,7 @@ class _SignupScreenState extends State<SignupScreen> {
   bool isLoading = false;
   bool hasAgreed = false;
   bool isSuperviseur = false;
-  bool isStagiaire = false;// Pour vérifier si le rôle est superviseur
+  bool isStagiaire = false;// vérifier si le rôle est superviseur
 
   Map<String, dynamic> errors = {};
 

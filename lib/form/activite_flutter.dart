@@ -99,7 +99,7 @@ class _CreateActivitePageState extends State<CreateActivitePage> {
         title: Text('Créer une activité'),
       ),
       body: RefreshIndicator(
-        onRefresh: _fetchServices, // Permet de rafraîchir manuellement
+        onRefresh: _fetchServices, //rafraîchir manuellement
         child: _isLoading
             ? Center(child: CircularProgressIndicator()) // Affiche un loader pendant le chargement
             : Padding(

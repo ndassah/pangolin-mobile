@@ -13,6 +13,8 @@ class stagiairePage extends StatefulWidget {
 class _stagiairePageState extends State<stagiairePage> {
   bool _isLoading = true;
   List<dynamic> _activites = [];
+  List<dynamic> _superviseurs = []; // Nouvelle variable pour stocker les superviseurs
+
 
   @override
   void initState() {
@@ -48,6 +50,36 @@ class _stagiairePageState extends State<stagiairePage> {
     }
   }
 
+  Future<void> _fetchSuperviseurs() async {
+    try {
+      final response = await http
+          .get(Uri.parse('http://192.168.43.39:8000/api/superviseur/all'));
+
+      if (response.statusCode == 200) {
+        setState(() {
+          _superviseurs = json.decode(response.body);
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(
+              'Échec de la récupération des superviseurs. Code: ${response.statusCode}'),
+        ));
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Erreur: $e'),
+      ));
+    }
+  }
+
+  Future<void> _refreshData() async {
+    setState(() {
+      _isLoading = true;
+    });
+    await _fetchActivites();
+    await _fetchSuperviseurs();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -60,39 +92,42 @@ class _stagiairePageState extends State<stagiairePage> {
         elevation: 0,
       ),
       drawer: buildDrawer(context),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            VerticalSpacer(height: 20),
-            Text(
-              'Options',
-              style: AppText.sectionTitle(),
-            ),
-            VerticalSpacer(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _buildIconOption(Icons.assessment, 'liste des taches','/tache',context),
-                _buildIconOption(Icons.history_rounded, 'historique des travaux','/work',context),
-              ],
-            ),
-            VerticalSpacer(height: 30),
-            Text(
-              'Liste des travaux',
-              style: AppText.sectionTitle(),
-            ),
-            VerticalSpacer(height: 10),
-            _buildSuperviseurList(),
-            VerticalSpacer(height: 30),
-            Text(
-              'Activités',
-              style: AppText.sectionTitle(),
-            ),
-            VerticalSpacer(height: 10),
-            _isLoading ? Center(child: CircularProgressIndicator()) : _buildActiviteTable(),
-          ],
+      body: RefreshIndicator(
+        onRefresh: _refreshData,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              VerticalSpacer(height: 20),
+              Text(
+                'Options',
+                style: AppText.sectionTitle(),
+              ),
+              VerticalSpacer(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  _buildIconOption(Icons.assessment, 'liste des taches','/tache',context),
+                  _buildIconOption(Icons.history_rounded, 'historique des travaux','/work',context),
+                ],
+              ),
+              VerticalSpacer(height: 30),
+              Text(
+                'Liste des travaux',
+                style: AppText.sectionTitle(),
+              ),
+              VerticalSpacer(height: 10),
+              _buildSuperviseurList(),
+              VerticalSpacer(height: 30),
+              Text(
+                'Activités',
+                style: AppText.sectionTitle(),
+              ),
+              VerticalSpacer(height: 10),
+              _isLoading ? Center(child: CircularProgressIndicator()) : _buildActiviteTable(),
+            ],
+          ),
         ),
       ),
     );
@@ -114,15 +149,19 @@ class _stagiairePageState extends State<stagiairePage> {
   }
 
   Widget _buildSuperviseurList() {
-    List<String> superviseurs = ['Superviseur 1', 'Superviseur 2', 'Superviseur 3', 'Superviseur 4', 'Superviseur 5'];
+    if (_superviseurs.isEmpty) {
+      return Center(child: Text('Aucun superviseur trouvé'));
+    }
 
     return Container(
       height: 150,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        itemCount: superviseurs.length,
+        itemCount: _superviseurs.length,
         itemBuilder: (context, index) {
-          return _buildSuperviseurCard(superviseurs[index]);
+          final superviseur =
+              _superviseurs[index]['nom_superviseur'] ?? 'Superviseur inconnu';
+          return _buildSuperviseurCard(superviseur);
         },
       ),
     );
