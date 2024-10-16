@@ -163,8 +163,9 @@ class _superviseurPageState extends State<superviseurPage> {
   }
 
   Widget _buildStagiaireCard(dynamic stagiaire) {
+    String nom = stagiaire['nom'] ?? 'Nom indisponible';
     return Container(
-      width: 165,
+      width: 105,
       margin: EdgeInsets.symmetric(horizontal: 8),
       decoration: BoxDecoration(
         color: Colors.greenAccent,
@@ -175,13 +176,7 @@ class _superviseurPageState extends State<superviseurPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              stagiaire['nom'], // Affiche le nom du stagiaire
-              style: AppText.cardText(),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: 5),
-            Text(
-              stagiaire['email'], // Affiche l'email du stagiaire
+              nom,
               style: AppText.cardText(),
               textAlign: TextAlign.center,
             ),
@@ -190,6 +185,7 @@ class _superviseurPageState extends State<superviseurPage> {
       ),
     );
   }
+
 
 
   // Création de la table d'activités
