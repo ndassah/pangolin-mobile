@@ -21,6 +21,7 @@ import 'package:sappeli/onBoarding/splash.dart';
 import 'package:sappeli/onBoarding/walk.dart';
 import 'package:sappeli/tools/app_routes.dart';
 import 'auth/verification.dart';
+import 'interface/stagiaire/history.dart';
 import 'interface/directeur/faq_page.dart';
 import 'interface/directeur/travaux_page.dart';
 import 'interface/stagiaire/travaux_page_stagiaire.dart';
@@ -63,7 +64,7 @@ class MyApp extends StatelessWidget {
         '/profilStagiaire': (context) => ProfilPageStagiaire(),
         '/deconnexion': (context) => DeconnexionPage(),
         '/faq': (context) => FaqPage(),
-        'faqStagiaire': (context) => FaqPageStagiaire(),
+        '/faqStagiaire': (context) => FaqPageStagiaire(),
         '/create-activite': (context) => CreateActivitePage(),
         '/tache':(context) => CreateTachePage(),
         '/tacheStagiaire': (context) => TachesPageStagiaire(),
@@ -73,6 +74,7 @@ class MyApp extends StatelessWidget {
         '/stagiaire': (context) =>stagiairePage(),
         '/etude':(context) => EtudePage(stagiaireId: 1,),
         '/work': (context) => CreateTravailPage(),
+        '/workHistory':(context) => workHistory(),
         '/service': (context) =>CreateServicePage(),
         '/faqSub': (context) =>FaqPageSub(),
         '/travauxSub': (context) =>TravauxPageSub(),

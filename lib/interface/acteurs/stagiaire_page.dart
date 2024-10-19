@@ -109,7 +109,7 @@ class _stagiairePageState extends State<stagiairePage> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   _buildIconOption(Icons.assessment, 'liste des taches','/tacheStagiaire',context),
-                  _buildIconOption(Icons.history_rounded, 'historique des travaux','/work',context),
+                  _buildIconOption(Icons.history_rounded, 'historique des travaux','/workHistory',context),
                 ],
               ),
               VerticalSpacer(height: 30),
