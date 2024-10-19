@@ -135,6 +135,8 @@ class _ProfilPageSubState extends State<ProfilPageSub> {
           SizedBox(height: 8),
           Divider(thickness: 1, color: Colors.grey),
           SizedBox(height: 8),
+          _buildProfileDetailRow('Nom', userData!['nom']?.toString() ?? 'Non disponible'),
+          _buildProfileDetailRow('Prenom', userData!['prenom']?.toString() ?? 'Non disponible'),
           _buildProfileDetailRow('Email', userData!['email']?.toString() ?? 'Non disponible'),
           _buildProfileDetailRow('Téléphone', userData!['telephone']?.toString() ?? 'Non disponible'),
         ],

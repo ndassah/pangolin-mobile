@@ -3,7 +3,6 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:sappeli/tools/app_text.dart';
 import 'package:sappeli/widgets/drawers/drawer.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfilPage extends StatefulWidget {
   const ProfilPage({super.key});
@@ -13,121 +12,170 @@ class ProfilPage extends StatefulWidget {
 }
 
 class _ProfilPageState extends State<ProfilPage> {
-  Map<String, dynamic>? userData; // Stocker les informations utilisateur ici
+  Map<String, dynamic>? userData; // Stocker les informations de l'utilisateur ici
   bool _isLoading = true; // Indicateur de chargement
   String? errorMessage; // Pour stocker le message d'erreur éventuel
 
   @override
   void initState() {
     super.initState();
-    _fetchUserData(); // Récupérer les données utilisateur à l'initialisation de la page
+    _fetchUserData(); // Récupérer les données de l'utilisateur à l'initialisation de la page
   }
 
-  // Fonction pour récupérer l'ID de l'utilisateur en session et ses informations
+  // Fonction pour récupérer les informations de l'utilisateur via son ID et le token d'authentification
   Future<void> _fetchUserData() async {
-    String? token = await SecureStorage.read('auth_token'); // Récupérer le token
+    String? token = await SecureStorage.read('auth_token');
+    String? userId = await SecureStorage.read('user_id');
 
-    if (token != null && token.isNotEmpty) {
-      print("Token: $token"); // Vérifier que le token est bien récupéré
-      final url = Uri.parse('http://192.168.43.39:8000/api/user'); // URL de l'API
-      final response = await http.get(
-        url,
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Accept': 'application/json', // Indique que tu veux une réponse JSON
-          'Content-Type': 'application/json', // Indique que la requête attend un format JSON
-        },
-      );
+    if (token != null && token.isNotEmpty && userId != null && userId.isNotEmpty) {
+      print("Token: $token");
+      print("User ID: $userId");
 
+      final url = Uri.parse('http://192.168.43.39:8000/api/superviseur/all/$userId');
 
-      if (response.statusCode == 200) {
-        try {
-          final jsonResponse = json.decode(response.body);
+      try {
+        final response = await http.get(
+          url,
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          },
+        );
 
-          // Validation de la structure attendue dans la réponse JSON
-          if (jsonResponse is Map<String, dynamic> && jsonResponse.containsKey('user')) {
-            setState(() {
-              userData = jsonResponse['user']; // Accéder à l'objet 'user'
-              _isLoading = false; // Arrêter l'indicateur de chargement
-            });
+        print('Response status: ${response.statusCode}');
+        print('Response body: ${response.body}');
+
+        if (response.statusCode == 200) {
+          final contentType = response.headers['content-type'];
+
+          if (contentType != null && contentType.contains('application/json')) {
+            final jsonResponse = json.decode(response.body);
+
+            // Adapter la structure JSON pour obtenir les données de l'utilisateur
+            if (jsonResponse is Map<String, dynamic> && jsonResponse.containsKey('user')) {
+              setState(() {
+                userData = jsonResponse['user']; // Les données de l'utilisateur sont sous 'user'
+                _isLoading = false;
+              });
+            } else {
+              setState(() {
+                errorMessage = 'Format inattendu : ${response.body}';
+                _isLoading = false;
+              });
+            }
           } else {
             setState(() {
-              errorMessage = 'Format inattendu'; // Erreur si l'objet 'user' est absent
+              errorMessage = 'Réponse non JSON reçue : ${response.body}';
               _isLoading = false;
             });
           }
-        } catch (e) {
-          // Gestion des erreurs lors du parsing JSON
+        } else if (response.statusCode == 404) {
           setState(() {
-            errorMessage = 'Erreur de format JSON : ${e.toString()}';
+            errorMessage = 'Utilisateur non trouvé. Vérifiez l\'ID et réessayez.';
+            _isLoading = false;
+          });
+        } else {
+          setState(() {
+            errorMessage = 'Erreur lors de la récupération des données: ${response.statusCode}';
             _isLoading = false;
           });
         }
-      } else if (response.statusCode == 401) {
+      } catch (e) {
         setState(() {
-          errorMessage = 'Erreur d\'authentification : token invalide';
-          _isLoading = false;
-        });
-      } else {
-        setState(() {
-          errorMessage = 'Erreur lors de la récupération des données: ${response.statusCode}';
+          errorMessage = 'Erreur réseau : ${e.toString()}';
           _isLoading = false;
         });
       }
     } else {
       setState(() {
-        errorMessage = 'Aucun token trouvé';
+        errorMessage = 'Aucun token ou ID d\'utilisateur trouvé';
         _isLoading = false;
       });
     }
   }
 
+  // Widget pour les différents états (chargement, erreur, ou données manquantes)
+  Widget _buildStateWidget() {
+    if (_isLoading) {
+      return Center(child: CircularProgressIndicator());
+    } else if (errorMessage != null) {
+      return Center(child: Text(errorMessage!));
+    } else if (userData == null) {
+      return Center(child: Text('Aucune donnée disponible.'));
+    } else {
+      return _buildProfileContent();
+    }
+  }
+
+  // Contenu du profil
+  Widget _buildProfileContent() {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        children: [
+          CircleAvatar(
+            radius: 50,
+            backgroundColor: Colors.blueAccent,
+            child: Text(
+              // Conversion explicite en String
+              userData!['prenom'] != null
+                  ? userData!['prenom'].toString()[0]
+                  : 'N/A',
+              style: TextStyle(fontSize: 40, color: Colors.white),
+            ),
+          ),
+          SizedBox(height: 16),
+          Text(
+            // Conversion explicite des noms
+            '${userData!['prenom']?.toString() ?? 'Non disponible'} ${userData!['nom']?.toString() ?? 'Non disponible'}',
+            style: AppText.mainTitle(),
+          ),
+          SizedBox(height: 8),
+          Divider(thickness: 1, color: Colors.grey),
+          SizedBox(height: 8),
+          _buildProfileDetailRow('Nom', userData!['nom']?.toString() ?? 'Non disponible'),
+          _buildProfileDetailRow('Prenom', userData!['prenom']?.toString() ?? 'Non disponible'),
+          _buildProfileDetailRow('Email', userData!['email']?.toString() ?? 'Non disponible'),
+          _buildProfileDetailRow('Téléphone', userData!['telephone']?.toString() ?? 'Non disponible'),
+        ],
+      ),
+    );
+  }
+
+  // Widget pour afficher chaque ligne de détail
+  Widget _buildProfileDetailRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: AppText.mainContent(),
+          ),
+          Text(
+            value,
+            style: AppText.mainContent(),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Profil',
+          'Profil Utilisateur',
           style: AppText.mainTitle(),
         ),
         backgroundColor: Colors.blueAccent,
         elevation: 0,
       ),
       drawer: buildDrawer(context),
-      body: _isLoading
-          ? Center(child: CircularProgressIndicator()) // Afficher un indicateur de chargement
-          : errorMessage != null
-          ? Center(child: Text(errorMessage!)) // Afficher un message d'erreur s'il y a un problème
-          : userData == null
-          ? Center(child: Text('Aucune donnée disponible.'))
-          : Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Nom : ${userData!['nom'] ?? 'Non disponible'}',
-              style: AppText.mainTitle(),
-            ),
-            SizedBox(height: 8),
-            Text(
-              'Prénom : ${userData!['prenom'] ?? 'Non disponible'}',
-              style: AppText.mainContent(),
-            ),
-            SizedBox(height: 8),
-            Text(
-              'Email : ${userData!['email'] ?? 'Non disponible'}',
-              style: AppText.mainContent(),
-            ),
-            SizedBox(height: 8),
-            Text(
-              'Téléphone : ${userData!['telephone'] ?? 'Non disponible'}',
-              style: AppText.mainContent(),
-            ),
-          ],
-        ),
-      ),
+      body: _buildStateWidget(),
     );
   }
 }

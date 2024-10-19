@@ -60,7 +60,7 @@ class MyApp extends StatelessWidget {
         },
         '/taches': (context) => TachesPage(),
         '/profil': (context) => ProfilPage(),
-        'profilStagiaire': (context) => ProfilPageStagiaire(),
+        '/profilStagiaire': (context) => ProfilPageStagiaire(),
         '/deconnexion': (context) => DeconnexionPage(),
         '/faq': (context) => FaqPage(),
         'faqStagiaire': (context) => FaqPageStagiaire(),
