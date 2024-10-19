@@ -8,10 +8,8 @@ import '../tools/app_colours.dart';
 import '../tools/app_routes.dart';
 import '../tools/app_spacing.dart';
 import '../tools/app_strings.dart';
-import '../tools/app_styles.dart';
 import '../utils/helpers.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-
 import '../widgets/drawers/drawer.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -88,7 +86,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 textInputAction: TextInputAction.done,
               ),
               AppSpacing.vertical(size: 16),
-              ButtonComponent(
+              isLoading
+                  ? Center(child: CircularProgressIndicator())
+                  : ButtonComponent(
                 label: AppStrings.login,
                 onPressed: login,
               ),
@@ -100,14 +100,16 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> login() async {
-    setState(() => errors = {});
+    setState(() {
+      errors = {};
+      isLoading = true;
+    });
     FocusScope.of(context).unfocus();
 
     if (!formKey.currentState!.validate()) {
+      setState(() => isLoading = false);
       return;
     }
-
-    setState(() => isLoading = true);
 
     final Map<String, dynamic> data = {
       'email': emailEditingController.text,
@@ -127,11 +129,14 @@ class _LoginScreenState extends State<LoginScreen> {
       if (response.statusCode == 201) {
         final responseBody = jsonDecode(response.body);
         final token = responseBody['results']['token'];
-        final roleId = responseBody['results']['role_id']; // Récupération du role_id
+        final roleId = responseBody['results']['role_id'];
+        final userId = responseBody['results']['user_id']; // Récupération de l'ID utilisateur
 
-        // Stocker le token dans un stockage sécurisé
+        // Stocker le token et l'ID utilisateur dans un stockage sécurisé
         await SecureStorage.save('auth_token', token);
+        await SecureStorage.save('user_id', userId.toString()); // Stocker l'ID de l'utilisateur
         print("Token enregistré: $token"); // Débogage
+        print("ID utilisateur enregistré: $userId");
 
         // Redirection en fonction du role_id
         if (roleId == 2) {
