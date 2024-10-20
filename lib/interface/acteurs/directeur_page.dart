@@ -117,7 +117,7 @@ class _directeurPageState extends State<directeurPage> {
                   _buildIconOption(
                       Icons.assignment, 'tâches', '/tache', context),
                   _buildIconOption(
-                      Icons.design_services, 'evaluer service', '/service', context),
+                      Icons.design_services, ' service', '/service', context),
                 ],
               ),
               VerticalSpacer(height: 30),

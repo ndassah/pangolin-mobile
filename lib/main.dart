@@ -29,6 +29,7 @@ import 'interface/directeur/taches_page.dart';
 import 'interface/directeur/profil_page.dart';
 import 'interface/deconnexion_page.dart';
 import 'interface/stagiaire/faq_page_stagiaire.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 void main() {
   runApp(MyApp());
@@ -81,7 +82,7 @@ class MyApp extends StatelessWidget {
         '/tachesSub': (context) =>TachesPageSub(),
         '/profileSub': (context) =>ProfilPageSub(),
         '/assign-work': (context) => AssignWorkPage(),
-        '/evaluerStagiaire': (context) => evaluerStagiaire(),
+        '/evaluerStagiaire': (context) => EvaluerStagiairePage(),
       },
     );
   }
