@@ -42,7 +42,7 @@ class _WalkScreenState extends State<WalkScreen> {
                     padding: const EdgeInsets.all(24),
                     shrinkWrap: true,
                     children: [
-                      const SizedBox(height: 60),
+                      const SizedBox(height: 140),
                       Center(
                           child: Image.asset(slide[index].image,
                             width: MediaQuery.of(context).size.width/1.5,
@@ -70,17 +70,17 @@ class _WalkScreenState extends State<WalkScreen> {
             child: Column(
               children: [
                 indicator(),
-                const SizedBox(height: 90),
-                ButtonComponent(
-                    onPressed:()=> Navigator.of(context).pushNamed(AppRoutes.signup),
-                    label: 'Signup',
-                    icon: null,
-                    type: ButtonType.secondary
-                ),
+                // const SizedBox(height: 90),
+                // ButtonComponent(
+                //     onPressed:()=> Navigator.of(context).pushNamed(AppRoutes.signup),
+                //     label: 'Signup',
+                //     icon: null,
+                //     type: ButtonType.secondary
+                // ),
                 const SizedBox(height: 20),
                 ButtonComponent(
                     onPressed:()=>Navigator.of(context).pushNamed(AppRoutes.login),
-                    label: 'Login',
+                    label: 'Connexion',
                     icon: null,
                     type: ButtonType.primary),
                 const SizedBox(height: 50),

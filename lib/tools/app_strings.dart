@@ -5,9 +5,9 @@ class AppStrings {
       "outil de suivi de suivi de taches attribues aux stagiaires";
   static String title2 = "travail collaboratif";
   static String description2 =
-      "outil d'amelioration du travail au sein d'une equipe ";
+      "outil d'amelioration du travail au sein d'une equipe  ";
   static String title3 = "amelioration continue";
-  static String description3 = "outil d'amelioration du travail fournit";
+  static String description3 = "amelioration exponentiel de la qualite du travail fournit";
   static String signup = "sign up";
   static String signup_google = "sign up with google";
   static String login_google = "login with google";
